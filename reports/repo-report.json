@@ -1,0 +1,297 @@
+{
+  "scan_report": {
+    "project_name": "repo-vibes",
+    "root_path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes",
+    "file_count": 11,
+    "total_lines": 1279,
+    "max_depth": 1,
+    "files": [
+      {
+        "path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\main.py",
+        "name": "main.py",
+        "extension": ".py",
+        "line_count": 5,
+        "depth": 0,
+        "size_bytes": 90,
+        "is_binary": false
+      },
+      {
+        "path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\pyproject.toml",
+        "name": "pyproject.toml",
+        "extension": ".toml",
+        "line_count": 4,
+        "depth": 0,
+        "size_bytes": 96,
+        "is_binary": false
+      },
+      {
+        "path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\README.md",
+        "name": "README.md",
+        "extension": ".md",
+        "line_count": 0,
+        "depth": 0,
+        "size_bytes": 8357,
+        "is_binary": true
+      },
+      {
+        "path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\.vscode\\settings.json",
+        "name": "settings.json",
+        "extension": ".json",
+        "line_count": 4,
+        "depth": 1,
+        "size_bytes": 66,
+        "is_binary": false
+      },
+      {
+        "path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\cli.py",
+        "name": "cli.py",
+        "extension": ".py",
+        "line_count": 91,
+        "depth": 1,
+        "size_bytes": 3018,
+        "is_binary": false
+      },
+      {
+        "path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\formatter.py",
+        "name": "formatter.py",
+        "extension": ".py",
+        "line_count": 410,
+        "depth": 1,
+        "size_bytes": 15372,
+        "is_binary": false
+      },
+      {
+        "path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\models.py",
+        "name": "models.py",
+        "extension": ".py",
+        "line_count": 37,
+        "depth": 1,
+        "size_bytes": 669,
+        "is_binary": false
+      },
+      {
+        "path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\rules.py",
+        "name": "rules.py",
+        "extension": ".py",
+        "line_count": 81,
+        "depth": 1,
+        "size_bytes": 1572,
+        "is_binary": false
+      },
+      {
+        "path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\scanner.py",
+        "name": "scanner.py",
+        "extension": ".py",
+        "line_count": 214,
+        "depth": 1,
+        "size_bytes": 6102,
+        "is_binary": false
+      },
+      {
+        "path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\scoring.py",
+        "name": "scoring.py",
+        "extension": ".py",
+        "line_count": 415,
+        "depth": 1,
+        "size_bytes": 13626,
+        "is_binary": false
+      },
+      {
+        "path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\__init__.py",
+        "name": "__init__.py",
+        "extension": ".py",
+        "line_count": 18,
+        "depth": 1,
+        "size_bytes": 506,
+        "is_binary": false
+      }
+    ],
+    "largest_files": [
+      {
+        "path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\scoring.py",
+        "name": "scoring.py",
+        "extension": ".py",
+        "line_count": 415,
+        "depth": 1,
+        "size_bytes": 13626,
+        "is_binary": false
+      },
+      {
+        "path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\formatter.py",
+        "name": "formatter.py",
+        "extension": ".py",
+        "line_count": 410,
+        "depth": 1,
+        "size_bytes": 15372,
+        "is_binary": false
+      },
+      {
+        "path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\scanner.py",
+        "name": "scanner.py",
+        "extension": ".py",
+        "line_count": 214,
+        "depth": 1,
+        "size_bytes": 6102,
+        "is_binary": false
+      }
+    ],
+    "suspicious_names": [],
+    "findings": [
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\rules.py",
+        "line_no": 63,
+        "snippet": "DEBUG_PATTERN = re.compile(r\"\\b(TODO|FIXME|HACK|XXX)\\b\")"
+      }
+    ],
+    "duration_ms": 6
+  },
+  "scorecard": {
+    "risk_score": 2,
+    "risk_level": "low",
+    "naming_chaos_index": 0,
+    "structure_score": 100,
+    "complexity_score": 84,
+    "vibe_score": 95,
+    "overall_verdict": "This repo is still manageable, and the structure mostly holds.",
+    "security_findings": [
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\rules.py",
+        "line_no": 63,
+        "snippet": "DEBUG_PATTERN = re.compile(r\"\\b(TODO|FIXME|HACK|XXX)\\b\")"
+      }
+    ],
+    "vibe_findings": [
+      {
+        "rule_id": "oversized_code_file",
+        "severity": "medium",
+        "file_path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\scoring.py",
+        "line_no": null,
+        "snippet": "415 lines in a single file."
+      },
+      {
+        "rule_id": "oversized_code_file",
+        "severity": "medium",
+        "file_path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\formatter.py",
+        "line_no": null,
+        "snippet": "410 lines in a single file."
+      }
+    ],
+    "all_findings": [
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\rules.py",
+        "line_no": 63,
+        "snippet": "DEBUG_PATTERN = re.compile(r\"\\b(TODO|FIXME|HACK|XXX)\\b\")"
+      },
+      {
+        "rule_id": "oversized_code_file",
+        "severity": "medium",
+        "file_path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\scoring.py",
+        "line_no": null,
+        "snippet": "415 lines in a single file."
+      },
+      {
+        "rule_id": "oversized_code_file",
+        "severity": "medium",
+        "file_path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\formatter.py",
+        "line_no": null,
+        "snippet": "410 lines in a single file."
+      }
+    ],
+    "severity_counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 2,
+      "low": 1
+    },
+    "total_findings": 3,
+    "naming_stats": {
+      "dangerous_keyword_hits": 0,
+      "generic_file_name_hits": 0,
+      "historical_trace_hits": 0
+    },
+    "structure_stats": {
+      "deep_path_count": 0,
+      "generic_folder_hits": 0,
+      "root_file_count": 3
+    },
+    "complexity_stats": {
+      "over_300_count": 2,
+      "over_500_count": 0,
+      "over_800_count": 0,
+      "top_offenders": [
+        {
+          "path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\scoring.py",
+          "name": "scoring.py",
+          "extension": ".py",
+          "line_count": 415,
+          "depth": 1,
+          "size_bytes": 13626,
+          "is_binary": false
+        },
+        {
+          "path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\formatter.py",
+          "name": "formatter.py",
+          "extension": ".py",
+          "line_count": 410,
+          "depth": 1,
+          "size_bytes": 15372,
+          "is_binary": false
+        }
+      ],
+      "large_file_pressure": 16
+    }
+  },
+  "top_suspicious_files": [
+    [
+      "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\formatter.py",
+      [
+        "too large"
+      ]
+    ],
+    [
+      "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\scoring.py",
+      [
+        "too large"
+      ]
+    ],
+    [
+      "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\rules.py",
+      [
+        "contains risky patterns"
+      ]
+    ]
+  ],
+  "security_findings": [
+    {
+      "rule_id": "debug_marker",
+      "severity": "low",
+      "file_path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\rules.py",
+      "line_no": 63,
+      "snippet": "DEBUG_PATTERN = re.compile(r\"\\b(TODO|FIXME|HACK|XXX)\\b\")"
+    }
+  ],
+  "vibe_findings": [
+    {
+      "rule_id": "oversized_code_file",
+      "severity": "medium",
+      "file_path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\scoring.py",
+      "line_no": null,
+      "snippet": "415 lines in a single file."
+    },
+    {
+      "rule_id": "oversized_code_file",
+      "severity": "medium",
+      "file_path": "C:\\Users\\tedga\\Desktop\\LoneByte\\repo-vibes\\repo_vibes\\formatter.py",
+      "line_no": null,
+      "snippet": "410 lines in a single file."
+    }
+  ],
+  "max_findings": 8,
+  "truncated": false
+}

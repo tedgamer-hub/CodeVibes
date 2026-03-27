@@ -1,0 +1,726 @@
+{
+  "scan_report": {
+    "project_name": "repo-vibes",
+    "root_path": ".",
+    "file_count": 23,
+    "total_lines": 3142,
+    "max_depth": 2,
+    "generic_folder_counts": {},
+    "deep_path_count": 0,
+    "root_file_count": 5,
+    "files": [
+      {
+        "path": "CHANGELOG.md",
+        "name": "CHANGELOG.md",
+        "extension": ".md",
+        "line_count": 44,
+        "depth": 0,
+        "size_bytes": 1243,
+        "is_binary": false
+      },
+      {
+        "path": "main.py",
+        "name": "main.py",
+        "extension": ".py",
+        "line_count": 5,
+        "depth": 0,
+        "size_bytes": 90,
+        "is_binary": false
+      },
+      {
+        "path": "pyproject.toml",
+        "name": "pyproject.toml",
+        "extension": ".toml",
+        "line_count": 35,
+        "depth": 0,
+        "size_bytes": 1028,
+        "is_binary": false
+      },
+      {
+        "path": "README.md",
+        "name": "README.md",
+        "extension": ".md",
+        "line_count": 160,
+        "depth": 0,
+        "size_bytes": 3865,
+        "is_binary": false
+      },
+      {
+        "path": "RELEASE_NOTES_v1.0.0.md",
+        "name": "RELEASE_NOTES_v1.0.0.md",
+        "extension": ".md",
+        "line_count": 50,
+        "depth": 0,
+        "size_bytes": 1197,
+        "is_binary": false
+      },
+      {
+        "path": ".vscode\\settings.json",
+        "name": "settings.json",
+        "extension": ".json",
+        "line_count": 4,
+        "depth": 1,
+        "size_bytes": 66,
+        "is_binary": false
+      },
+      {
+        "path": "repo_vibes\\cli.py",
+        "name": "cli.py",
+        "extension": ".py",
+        "line_count": 385,
+        "depth": 1,
+        "size_bytes": 12692,
+        "is_binary": false
+      },
+      {
+        "path": "repo_vibes\\config.py",
+        "name": "config.py",
+        "extension": ".py",
+        "line_count": 230,
+        "depth": 1,
+        "size_bytes": 7161,
+        "is_binary": false
+      },
+      {
+        "path": "repo_vibes\\formatter.py",
+        "name": "formatter.py",
+        "extension": ".py",
+        "line_count": 463,
+        "depth": 1,
+        "size_bytes": 17335,
+        "is_binary": false
+      },
+      {
+        "path": "repo_vibes\\models.py",
+        "name": "models.py",
+        "extension": ".py",
+        "line_count": 41,
+        "depth": 1,
+        "size_bytes": 797,
+        "is_binary": false
+      },
+      {
+        "path": "repo_vibes\\rules.py",
+        "name": "rules.py",
+        "extension": ".py",
+        "line_count": 103,
+        "depth": 1,
+        "size_bytes": 1948,
+        "is_binary": false
+      },
+      {
+        "path": "repo_vibes\\scanner.py",
+        "name": "scanner.py",
+        "extension": ".py",
+        "line_count": 434,
+        "depth": 1,
+        "size_bytes": 13227,
+        "is_binary": false
+      },
+      {
+        "path": "repo_vibes\\scoring.py",
+        "name": "scoring.py",
+        "extension": ".py",
+        "line_count": 465,
+        "depth": 1,
+        "size_bytes": 14797,
+        "is_binary": false
+      },
+      {
+        "path": "repo_vibes\\__init__.py",
+        "name": "__init__.py",
+        "extension": ".py",
+        "line_count": 25,
+        "depth": 1,
+        "size_bytes": 697,
+        "is_binary": false
+      },
+      {
+        "path": "tests\\sample_data.py",
+        "name": "sample_data.py",
+        "extension": ".py",
+        "line_count": 35,
+        "depth": 1,
+        "size_bytes": 933,
+        "is_binary": false
+      },
+      {
+        "path": "tests\\test_cli_smoke.py",
+        "name": "test_cli_smoke.py",
+        "extension": ".py",
+        "line_count": 241,
+        "depth": 1,
+        "size_bytes": 9424,
+        "is_binary": false
+      },
+      {
+        "path": "tests\\test_config.py",
+        "name": "test_config.py",
+        "extension": ".py",
+        "line_count": 58,
+        "depth": 1,
+        "size_bytes": 2197,
+        "is_binary": false
+      },
+      {
+        "path": "tests\\test_formatter_snapshots.py",
+        "name": "test_formatter_snapshots.py",
+        "extension": ".py",
+        "line_count": 41,
+        "depth": 1,
+        "size_bytes": 1496,
+        "is_binary": false
+      },
+      {
+        "path": "tests\\test_scanner.py",
+        "name": "test_scanner.py",
+        "extension": ".py",
+        "line_count": 107,
+        "depth": 1,
+        "size_bytes": 4618,
+        "is_binary": false
+      },
+      {
+        "path": "tests\\test_scoring.py",
+        "name": "test_scoring.py",
+        "extension": ".py",
+        "line_count": 91,
+        "depth": 1,
+        "size_bytes": 3942,
+        "is_binary": false
+      },
+      {
+        "path": "tests\\__init__.py",
+        "name": "__init__.py",
+        "extension": ".py",
+        "line_count": 2,
+        "depth": 1,
+        "size_bytes": 34,
+        "is_binary": false
+      },
+      {
+        "path": "tests\\snapshots\\formatter_markdown.md",
+        "name": "formatter_markdown.md",
+        "extension": ".md",
+        "line_count": 40,
+        "depth": 2,
+        "size_bytes": 947,
+        "is_binary": false
+      },
+      {
+        "path": "tests\\snapshots\\formatter_report.json",
+        "name": "formatter_report.json",
+        "extension": ".json",
+        "line_count": 83,
+        "depth": 2,
+        "size_bytes": 2061,
+        "is_binary": false
+      }
+    ],
+    "largest_files": [
+      {
+        "path": "repo_vibes\\scoring.py",
+        "name": "scoring.py",
+        "extension": ".py",
+        "line_count": 465,
+        "depth": 1,
+        "size_bytes": 14797,
+        "is_binary": false
+      },
+      {
+        "path": "repo_vibes\\formatter.py",
+        "name": "formatter.py",
+        "extension": ".py",
+        "line_count": 463,
+        "depth": 1,
+        "size_bytes": 17335,
+        "is_binary": false
+      },
+      {
+        "path": "repo_vibes\\scanner.py",
+        "name": "scanner.py",
+        "extension": ".py",
+        "line_count": 434,
+        "depth": 1,
+        "size_bytes": 13227,
+        "is_binary": false
+      },
+      {
+        "path": "repo_vibes\\cli.py",
+        "name": "cli.py",
+        "extension": ".py",
+        "line_count": 385,
+        "depth": 1,
+        "size_bytes": 12692,
+        "is_binary": false
+      },
+      {
+        "path": "tests\\test_cli_smoke.py",
+        "name": "test_cli_smoke.py",
+        "extension": ".py",
+        "line_count": 241,
+        "depth": 1,
+        "size_bytes": 9424,
+        "is_binary": false
+      }
+    ],
+    "oversized_files": [
+      {
+        "path": "repo_vibes\\scoring.py",
+        "name": "scoring.py",
+        "extension": ".py",
+        "line_count": 465,
+        "depth": 1,
+        "size_bytes": 14797,
+        "is_binary": false
+      },
+      {
+        "path": "repo_vibes\\formatter.py",
+        "name": "formatter.py",
+        "extension": ".py",
+        "line_count": 463,
+        "depth": 1,
+        "size_bytes": 17335,
+        "is_binary": false
+      },
+      {
+        "path": "repo_vibes\\scanner.py",
+        "name": "scanner.py",
+        "extension": ".py",
+        "line_count": 434,
+        "depth": 1,
+        "size_bytes": 13227,
+        "is_binary": false
+      },
+      {
+        "path": "repo_vibes\\cli.py",
+        "name": "cli.py",
+        "extension": ".py",
+        "line_count": 385,
+        "depth": 1,
+        "size_bytes": 12692,
+        "is_binary": false
+      }
+    ],
+    "suspicious_names": [
+      "tests\\__init__.py",
+      "tests\\sample_data.py",
+      "tests\\snapshots\\formatter_markdown.md",
+      "tests\\snapshots\\formatter_report.json",
+      "tests\\test_cli_smoke.py",
+      "tests\\test_config.py",
+      "tests\\test_formatter_snapshots.py",
+      "tests\\test_scanner.py",
+      "tests\\test_scoring.py"
+    ],
+    "findings": [
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "repo_vibes\\rules.py",
+        "line_no": 81,
+        "snippet": "DEBUG_PATTERN = re.compile(r\"\\b(TODO|FIXME|HACK|XXX)\\b\")"
+      },
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "tests\\test_cli_smoke.py",
+        "line_no": 58,
+        "snippet": "(root / \"main.py\").write_text(\"TODO: one\\nFIXME: two\\n\", encoding=\"utf-8\")"
+      },
+      {
+        "rule_id": "hardcoded_secret",
+        "severity": "critical",
+        "file_path": "tests\\test_cli_smoke.py",
+        "line_no": 97,
+        "snippet": "\"password = 'abc'\\n\""
+      },
+      {
+        "rule_id": "dangerous_execution",
+        "severity": "high",
+        "file_path": "tests\\test_cli_smoke.py",
+        "line_no": 98,
+        "snippet": "\"eval('1')\\n\","
+      },
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "tests\\test_cli_smoke.py",
+        "line_no": 120,
+        "snippet": "(root / \"main.py\").write_text(\"TODO: one\\nFIXME: two\\n\", encoding=\"utf-8\")"
+      },
+      {
+        "rule_id": "hardcoded_secret",
+        "severity": "critical",
+        "file_path": "tests\\test_scoring.py",
+        "line_no": 27,
+        "snippet": "snippet=\"password = 'abc'\","
+      },
+      {
+        "rule_id": "dangerous_execution",
+        "severity": "high",
+        "file_path": "tests\\test_scoring.py",
+        "line_no": 34,
+        "snippet": "snippet=\"eval(user_input)\","
+      },
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "tests\\test_scoring.py",
+        "line_no": 41,
+        "snippet": "snippet=\"TODO: cleanup\","
+      },
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "tests\\test_scoring.py",
+        "line_no": 48,
+        "snippet": "snippet=\"FIXME: cleanup\","
+      }
+    ],
+    "duration_ms": 17
+  },
+  "scorecard": {
+    "risk_score": 100,
+    "risk_level": "high",
+    "naming_chaos_index": 37,
+    "structure_score": 100,
+    "complexity_score": 68,
+    "vibe_score": 77,
+    "overall_verdict": "Overall workable, but drift has started. Security risk signals need urgent attention.",
+    "security_findings": [
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "repo_vibes\\rules.py",
+        "line_no": 81,
+        "snippet": "DEBUG_PATTERN = re.compile(r\"\\b(TODO|FIXME|HACK|XXX)\\b\")"
+      },
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "tests\\test_cli_smoke.py",
+        "line_no": 58,
+        "snippet": "(root / \"main.py\").write_text(\"TODO: one\\nFIXME: two\\n\", encoding=\"utf-8\")"
+      },
+      {
+        "rule_id": "hardcoded_secret",
+        "severity": "critical",
+        "file_path": "tests\\test_cli_smoke.py",
+        "line_no": 97,
+        "snippet": "\"password = 'abc'\\n\""
+      },
+      {
+        "rule_id": "dangerous_execution",
+        "severity": "high",
+        "file_path": "tests\\test_cli_smoke.py",
+        "line_no": 98,
+        "snippet": "\"eval('1')\\n\","
+      },
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "tests\\test_cli_smoke.py",
+        "line_no": 120,
+        "snippet": "(root / \"main.py\").write_text(\"TODO: one\\nFIXME: two\\n\", encoding=\"utf-8\")"
+      },
+      {
+        "rule_id": "hardcoded_secret",
+        "severity": "critical",
+        "file_path": "tests\\test_scoring.py",
+        "line_no": 27,
+        "snippet": "snippet=\"password = 'abc'\","
+      },
+      {
+        "rule_id": "dangerous_execution",
+        "severity": "high",
+        "file_path": "tests\\test_scoring.py",
+        "line_no": 34,
+        "snippet": "snippet=\"eval(user_input)\","
+      },
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "tests\\test_scoring.py",
+        "line_no": 41,
+        "snippet": "snippet=\"TODO: cleanup\","
+      },
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "tests\\test_scoring.py",
+        "line_no": 48,
+        "snippet": "snippet=\"FIXME: cleanup\","
+      }
+    ],
+    "vibe_findings": [
+      {
+        "rule_id": "naming_chaos",
+        "severity": "low",
+        "file_path": ".",
+        "line_no": null,
+        "snippet": "Naming Chaos Index reached 37/100."
+      },
+      {
+        "rule_id": "oversized_code_file",
+        "severity": "medium",
+        "file_path": "repo_vibes\\scoring.py",
+        "line_no": null,
+        "snippet": "465 lines in a single file."
+      },
+      {
+        "rule_id": "oversized_code_file",
+        "severity": "medium",
+        "file_path": "repo_vibes\\formatter.py",
+        "line_no": null,
+        "snippet": "463 lines in a single file."
+      },
+      {
+        "rule_id": "oversized_code_file",
+        "severity": "medium",
+        "file_path": "repo_vibes\\scanner.py",
+        "line_no": null,
+        "snippet": "434 lines in a single file."
+      },
+      {
+        "rule_id": "oversized_code_file",
+        "severity": "medium",
+        "file_path": "repo_vibes\\cli.py",
+        "line_no": null,
+        "snippet": "385 lines in a single file."
+      },
+      {
+        "rule_id": "legacy_filename_pattern",
+        "severity": "low",
+        "file_path": ".",
+        "line_no": null,
+        "snippet": "1 files show legacy filename patterns."
+      }
+    ],
+    "all_findings": [
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "repo_vibes\\rules.py",
+        "line_no": 81,
+        "snippet": "DEBUG_PATTERN = re.compile(r\"\\b(TODO|FIXME|HACK|XXX)\\b\")"
+      },
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "tests\\test_cli_smoke.py",
+        "line_no": 58,
+        "snippet": "(root / \"main.py\").write_text(\"TODO: one\\nFIXME: two\\n\", encoding=\"utf-8\")"
+      },
+      {
+        "rule_id": "hardcoded_secret",
+        "severity": "critical",
+        "file_path": "tests\\test_cli_smoke.py",
+        "line_no": 97,
+        "snippet": "\"password = 'abc'\\n\""
+      },
+      {
+        "rule_id": "dangerous_execution",
+        "severity": "high",
+        "file_path": "tests\\test_cli_smoke.py",
+        "line_no": 98,
+        "snippet": "\"eval('1')\\n\","
+      },
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "tests\\test_cli_smoke.py",
+        "line_no": 120,
+        "snippet": "(root / \"main.py\").write_text(\"TODO: one\\nFIXME: two\\n\", encoding=\"utf-8\")"
+      },
+      {
+        "rule_id": "hardcoded_secret",
+        "severity": "critical",
+        "file_path": "tests\\test_scoring.py",
+        "line_no": 27,
+        "snippet": "snippet=\"password = 'abc'\","
+      },
+      {
+        "rule_id": "dangerous_execution",
+        "severity": "high",
+        "file_path": "tests\\test_scoring.py",
+        "line_no": 34,
+        "snippet": "snippet=\"eval(user_input)\","
+      },
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "tests\\test_scoring.py",
+        "line_no": 41,
+        "snippet": "snippet=\"TODO: cleanup\","
+      },
+      {
+        "rule_id": "debug_marker",
+        "severity": "low",
+        "file_path": "tests\\test_scoring.py",
+        "line_no": 48,
+        "snippet": "snippet=\"FIXME: cleanup\","
+      },
+      {
+        "rule_id": "naming_chaos",
+        "severity": "low",
+        "file_path": ".",
+        "line_no": null,
+        "snippet": "Naming Chaos Index reached 37/100."
+      },
+      {
+        "rule_id": "oversized_code_file",
+        "severity": "medium",
+        "file_path": "repo_vibes\\scoring.py",
+        "line_no": null,
+        "snippet": "465 lines in a single file."
+      },
+      {
+        "rule_id": "oversized_code_file",
+        "severity": "medium",
+        "file_path": "repo_vibes\\formatter.py",
+        "line_no": null,
+        "snippet": "463 lines in a single file."
+      },
+      {
+        "rule_id": "oversized_code_file",
+        "severity": "medium",
+        "file_path": "repo_vibes\\scanner.py",
+        "line_no": null,
+        "snippet": "434 lines in a single file."
+      },
+      {
+        "rule_id": "oversized_code_file",
+        "severity": "medium",
+        "file_path": "repo_vibes\\cli.py",
+        "line_no": null,
+        "snippet": "385 lines in a single file."
+      },
+      {
+        "rule_id": "legacy_filename_pattern",
+        "severity": "low",
+        "file_path": ".",
+        "line_no": null,
+        "snippet": "1 files show legacy filename patterns."
+      }
+    ],
+    "severity_counts": {
+      "critical": 2,
+      "high": 2,
+      "medium": 4,
+      "low": 7
+    },
+    "total_findings": 15,
+    "naming_stats": {
+      "suspicious_name_count": 9,
+      "filename_keyword_hits": 0,
+      "generic_file_name_hits": 0,
+      "numeric_suffix_hits": 1
+    },
+    "structure_stats": {
+      "max_depth": 2,
+      "deep_path_count": 0,
+      "generic_folder_hits": 0,
+      "root_file_count": 5
+    },
+    "complexity_stats": {
+      "over_300_count": 4,
+      "over_500_count": 0,
+      "over_800_count": 0,
+      "top_offenders": [
+        {
+          "path": "repo_vibes\\scoring.py",
+          "name": "scoring.py",
+          "extension": ".py",
+          "line_count": 465,
+          "depth": 1,
+          "size_bytes": 14797,
+          "is_binary": false
+        },
+        {
+          "path": "repo_vibes\\formatter.py",
+          "name": "formatter.py",
+          "extension": ".py",
+          "line_count": 463,
+          "depth": 1,
+          "size_bytes": 17335,
+          "is_binary": false
+        },
+        {
+          "path": "repo_vibes\\scanner.py",
+          "name": "scanner.py",
+          "extension": ".py",
+          "line_count": 434,
+          "depth": 1,
+          "size_bytes": 13227,
+          "is_binary": false
+        },
+        {
+          "path": "repo_vibes\\cli.py",
+          "name": "cli.py",
+          "extension": ".py",
+          "line_count": 385,
+          "depth": 1,
+          "size_bytes": 12692,
+          "is_binary": false
+        }
+      ],
+      "large_file_pressure": 32
+    }
+  },
+  "top_suspicious_files": [
+    [
+      "tests\\test_cli_smoke.py",
+      [
+        "contains risky patterns",
+        "vague naming"
+      ]
+    ],
+    [
+      "tests\\test_scoring.py",
+      [
+        "contains risky patterns",
+        "vague naming"
+      ]
+    ],
+    [
+      "repo_vibes\\formatter.py",
+      [
+        "too large"
+      ]
+    ],
+    [
+      "repo_vibes\\scanner.py",
+      [
+        "too large"
+      ]
+    ],
+    [
+      "repo_vibes\\scoring.py",
+      [
+        "too large"
+      ]
+    ]
+  ],
+  "security_findings": [
+    {
+      "rule_id": "debug_marker",
+      "severity": "low",
+      "file_path": "repo_vibes\\rules.py",
+      "line_no": 81,
+      "snippet": "DEBUG_PATTERN = re.compile(r\"\\b(TODO|FIXME|HACK|XXX)\\b\")"
+    },
+    {
+      "rule_id": "debug_marker",
+      "severity": "low",
+      "file_path": "tests\\test_cli_smoke.py",
+      "line_no": 58,
+      "snippet": "(root / \"main.py\").write_text(\"TODO: one\\nFIXME: two\\n\", encoding=\"utf-8\")"
+    }
+  ],
+  "vibe_findings": [],
+  "verdict": "Overall workable, but drift has started. Security risk signals need urgent attention.",
+  "roast_mode": false,
+  "max_findings": 2,
+  "truncated": true
+}
