@@ -4,8 +4,8 @@ Brutally honest repository analysis for local projects and GitHub repos.
 
 `CodeVibes` scans a codebase, calculates engineering + "repo vibe" signals, and outputs a report in text, markdown, or JSON. It can also submit JSON to a webhook and enforce CI thresholds.
 
-![CodeVibes Poster](./assets.picture/<img width="1834" height="857" alt="d5c74d2d-1299-4253-8006-b0c665006cd2" src="https://github.com/user-attachments/assets/42776ebf-a62e-456a-bc38-cd8d5e961f41" />
-.png)
+<img width="1834" height="857" alt="d5c74d2d-1299-4253-8006-b0c665006cd2" src="https://github.com/user-attachments/assets/42776ebf-a62e-456a-bc38-cd8d5e961f41" />
+
 
 ## 1.0.0 Scope
 
