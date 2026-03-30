@@ -23,12 +23,14 @@ from .scanner import scan_project
 
 def main(argv: list[str] | None = None) -> int:
     raw_args = argv if argv is not None else sys.argv[1:]
-    if raw_args and raw_args[0] != "scan":
+    if raw_args and raw_args[0] not in {"scan", "ui"}:
         # Backward-compatible shortcut: `python main.py <path>`
         raw_args = ["scan", raw_args[0], *raw_args[1:]]
 
     parser = _build_parser()
     ns = parser.parse_args(raw_args)
+    if ns.command == "ui":
+        return _run_ui_command(ns)
     if ns.command != "scan":
         parser.print_help()
         return 1
@@ -45,6 +47,10 @@ def main(argv: list[str] | None = None) -> int:
         print("Error: --clone-timeout must be > 0.")
         return 1
 
+    return _run_scan_command(ns)
+
+
+def _run_scan_command(ns) -> int:
     with _prepare_scan_path(ns.path, clone_timeout=ns.clone_timeout) as project_path:
         if project_path is None:
             return 1
@@ -128,6 +134,23 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Policy failed: {'; '.join(policy_errors)}.", file=sys.stderr)
             return 2
         return 0
+
+
+def _run_ui_command(ns) -> int:
+    if ns.port <= 0 or ns.port > 65535:
+        print("Error: --port must be in range 1..65535.")
+        return 1
+    if ns.clone_timeout <= 0:
+        print("Error: --clone-timeout must be > 0.")
+        return 1
+    from .web_ui import run_ui_server
+
+    return run_ui_server(
+        host=ns.host,
+        port=ns.port,
+        no_browser=ns.no_browser,
+        clone_timeout=ns.clone_timeout,
+    )
 
 
 def _render_output(
@@ -333,6 +356,30 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Webhook submit timeout in seconds (default: 10).",
     )
     scan_parser.add_argument(
+        "--clone-timeout",
+        type=float,
+        default=30.0,
+        help="Git clone timeout in seconds for GitHub URL scans (default: 30).",
+    )
+
+    ui_parser = subparsers.add_parser("ui", help="Launch local web UI dashboard.")
+    ui_parser.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="Host to bind the UI server (default: 127.0.0.1).",
+    )
+    ui_parser.add_argument(
+        "--port",
+        type=int,
+        default=8765,
+        help="Port to bind the UI server (default: 8765).",
+    )
+    ui_parser.add_argument(
+        "--no-browser",
+        action="store_true",
+        help="Do not auto-open browser when the UI starts.",
+    )
+    ui_parser.add_argument(
         "--clone-timeout",
         type=float,
         default=30.0,
