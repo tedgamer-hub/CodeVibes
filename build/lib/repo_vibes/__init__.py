@@ -1,4 +1,4 @@
-__version__ = "1.1.0"
+__version__ = "1.0.0"
 
 from .config import RepoVibesConfig, default_repo_config, load_repo_config
 from .formatter import format_json_report, format_markdown_report, format_report

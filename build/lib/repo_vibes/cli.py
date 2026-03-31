@@ -16,7 +16,6 @@ from urllib.parse import urlparse
 
 from . import __version__
 from .config import RepoVibesConfig, load_repo_config
-from .diffing import build_diff_payload, format_diff_report, snapshot_from_scorecard
 from .formatter import format_json_report, format_markdown_report, format_report
 from .scoring import score_repo_vibes
 from .scanner import scan_project
@@ -24,29 +23,15 @@ from .scanner import scan_project
 
 def main(argv: list[str] | None = None) -> int:
     raw_args = argv if argv is not None else sys.argv[1:]
-    commands = {"scan", "diff", "ui"}
-    if raw_args and raw_args[0] not in commands and not raw_args[0].startswith("-"):
+    if raw_args and raw_args[0] != "scan":
         # Backward-compatible shortcut: `python main.py <path>`
         raw_args = ["scan", raw_args[0], *raw_args[1:]]
 
     parser = _build_parser()
-    try:
-        ns = parser.parse_args(raw_args)
-    except SystemExit as exc:
-        return int(exc.code)
-
-    if ns.command == "scan":
-        return _run_scan_command(ns)
-    if ns.command == "diff":
-        return _run_diff_command(ns)
-    if ns.command == "ui":
-        return _run_ui_command(ns)
-
-    parser.print_help()
-    return 1
-
-
-def _run_scan_command(ns: argparse.Namespace) -> int:
+    ns = parser.parse_args(raw_args)
+    if ns.command != "scan":
+        parser.print_help()
+        return 1
     if ns.fail_on_risk is not None and not (0 <= ns.fail_on_risk <= 100):
         print("Error: --fail-on-risk must be between 0 and 100.")
         return 1
@@ -127,13 +112,15 @@ def _run_scan_command(ns: argparse.Namespace) -> int:
 
         if submit_failed:
             return 3
-
         policy_errors: list[str] = []
         if ns.fail_on_risk is not None and scorecard.risk_score >= ns.fail_on_risk:
             policy_errors.append(
                 f"risk score {scorecard.risk_score} >= fail-on-risk {ns.fail_on_risk}"
             )
-        if ns.fail_on_findings is not None and scorecard.total_findings >= ns.fail_on_findings:
+        if (
+            ns.fail_on_findings is not None
+            and scorecard.total_findings >= ns.fail_on_findings
+        ):
             policy_errors.append(
                 f"findings {scorecard.total_findings} >= fail-on-findings {ns.fail_on_findings}"
             )
@@ -141,99 +128,6 @@ def _run_scan_command(ns: argparse.Namespace) -> int:
             print(f"Policy failed: {'; '.join(policy_errors)}.", file=sys.stderr)
             return 2
         return 0
-
-
-def _run_diff_command(ns: argparse.Namespace) -> int:
-    if ns.clone_timeout <= 0:
-        print("Error: --clone-timeout must be > 0.")
-        return 1
-    if ns.fail_on_new_high is not None and ns.fail_on_new_high < 0:
-        print("Error: --fail-on-new-high must be >= 0.")
-        return 1
-
-    baseline_snapshot = _load_baseline_snapshot(ns.baseline)
-
-    with _prepare_scan_path(ns.path, clone_timeout=ns.clone_timeout) as project_path:
-        if project_path is None:
-            return 1
-        try:
-            config, _warnings = load_repo_config(project_path)
-            report = scan_project(
-                project_path,
-                top_largest_files=ns.top_files,
-                config=config,
-            )
-            scorecard = score_repo_vibes(
-                report,
-                line_thresholds=config.oversized_file_line_thresholds,
-            )
-            max_findings = ns.max_findings
-            if max_findings is None:
-                max_findings = config.max_findings_default
-
-            head_snapshot = snapshot_from_scorecard(
-                label="head",
-                report=report,
-                scorecard=scorecard,
-            )
-            changed_files = _changed_files_from_snapshots(
-                baseline_snapshot.get("scan_report", {}),
-                head_snapshot.get("scan_report", {}),
-            )
-            payload = build_diff_payload(
-                base=baseline_snapshot,
-                head=head_snapshot,
-                changed_files=changed_files,
-                max_findings=max_findings,
-            )
-        except OSError as exc:
-            print(f"Error: failed to build diff: {exc}")
-            return 1
-        except ValueError as exc:
-            print(f"Error: {exc}")
-            return 1
-
-    output = _render_diff_output(payload, output_format=ns.format)
-    if ns.output:
-        output_path = Path(ns.output).expanduser()
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(output, encoding="utf-8")
-        print(f"Saved report to: {output_path}")
-    else:
-        print(output)
-
-    policy_errors: list[str] = []
-    ci_signals = payload.get("ci_signals", {})
-    new_high = int(ci_signals.get("new_high_findings", 0))
-    if ns.fail_on_new_high is not None and new_high > ns.fail_on_new_high:
-        policy_errors.append(
-            f"new high findings {new_high} > fail-on-new-high {ns.fail_on_new_high}"
-        )
-    if policy_errors:
-        print(f"Policy failed: {'; '.join(policy_errors)}.", file=sys.stderr)
-        return 2
-    return 0
-
-
-def _run_ui_command(ns: argparse.Namespace) -> int:
-    if ns.clone_timeout <= 0:
-        print("Error: --clone-timeout must be > 0.")
-        return 1
-
-    # Keep next-ui discovery hook available while defaulting to legacy server.
-    if not ns.legacy:
-        _ = _locate_next_ui_dir()
-
-    from . import web_ui
-
-    return int(
-        web_ui.run_ui_server(
-            host=ns.host,
-            port=ns.port,
-            no_browser=ns.no_browser,
-            clone_timeout=ns.clone_timeout,
-        )
-    )
 
 
 def _render_output(
@@ -275,14 +169,6 @@ def _render_output(
     raise ValueError(f"Unsupported format: {output_format}")
 
 
-def _render_diff_output(payload: dict[str, object], *, output_format: str) -> str:
-    if output_format == "json":
-        return json.dumps(payload, ensure_ascii=False, indent=2)
-    if output_format == "text":
-        return format_diff_report(payload)
-    raise ValueError(f"Unsupported format: {output_format}")
-
-
 def _call_formatter(
     formatter,
     report,
@@ -305,12 +191,7 @@ def _call_formatter(
         message = str(exc)
         if "unexpected keyword argument 'config'" in message:
             try:
-                return formatter(
-                    report,
-                    scorecard,
-                    max_findings=max_findings,
-                    roast_mode=roast_mode,
-                )
+                return formatter(report, scorecard, max_findings=max_findings, roast_mode=roast_mode)
             except TypeError as nested_exc:
                 nested_message = str(nested_exc)
                 if "unexpected keyword argument 'roast_mode'" in nested_message:
@@ -324,62 +205,6 @@ def _call_formatter(
                 config=config,
             )
         raise
-
-
-def _load_baseline_snapshot(baseline_path: str) -> dict[str, object]:
-    path = Path(baseline_path).expanduser()
-    if not path.exists():
-        raise ValueError(f"baseline file does not exist: {path}")
-    raw = path.read_text(encoding="utf-8")
-    try:
-        payload = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"invalid baseline JSON: {path}") from exc
-    if not isinstance(payload, dict):
-        raise ValueError("baseline JSON must be an object.")
-    scan_report = payload.get("scan_report")
-    scorecard = payload.get("scorecard")
-    if not isinstance(scan_report, dict) or not isinstance(scorecard, dict):
-        raise ValueError("baseline JSON must include `scan_report` and `scorecard`.")
-    return {
-        "label": "baseline",
-        "scan_report": scan_report,
-        "scorecard": scorecard,
-    }
-
-
-def _changed_files_from_snapshots(base_report: object, head_report: object) -> list[str]:
-    base_paths = _extract_file_paths(base_report)
-    head_paths = _extract_file_paths(head_report)
-    changed = sorted(base_paths.symmetric_difference(head_paths))
-    if changed:
-        return changed
-    # If the set is unchanged, provide all current files to keep the summary useful.
-    return sorted(head_paths)
-
-
-def _extract_file_paths(report: object) -> set[str]:
-    if not isinstance(report, dict):
-        return set()
-    files = report.get("files")
-    if not isinstance(files, list):
-        return set()
-    paths: set[str] = set()
-    for item in files:
-        if isinstance(item, dict):
-            path_value = item.get("path")
-            if isinstance(path_value, str) and path_value:
-                paths.add(path_value)
-    return paths
-
-
-def _locate_next_ui_dir() -> Path | None:
-    candidate = Path(__file__).resolve().parents[1] / "ui"
-    if not candidate.exists():
-        return None
-    if not (candidate / "package.json").exists():
-        return None
-    return candidate
 
 
 @contextmanager
@@ -458,7 +283,6 @@ def _build_parser() -> argparse.ArgumentParser:
         description="Brutally honest repository analysis.",
     )
     subparsers = parser.add_subparsers(dest="command")
-
     scan_parser = subparsers.add_parser("scan", help="Scan a local repository path.")
     scan_parser.add_argument("path", help="Local project path or GitHub URL to scan.")
     scan_parser.add_argument(
@@ -514,60 +338,6 @@ def _build_parser() -> argparse.ArgumentParser:
         default=30.0,
         help="Git clone timeout in seconds for GitHub URL scans (default: 30).",
     )
-
-    diff_parser = subparsers.add_parser("diff", help="Compare current scan with a baseline JSON.")
-    diff_parser.add_argument("path", help="Local project path or GitHub URL to scan.")
-    diff_parser.add_argument(
-        "--baseline",
-        required=True,
-        help="Path to baseline scan JSON generated by `scan --format json`.",
-    )
-    diff_parser.add_argument(
-        "--format",
-        choices=("text", "json"),
-        default="text",
-        help="Diff output format.",
-    )
-    diff_parser.add_argument(
-        "--top-files",
-        type=int,
-        default=5,
-        help="How many top long files to include while scanning current state.",
-    )
-    diff_parser.add_argument(
-        "--max-findings",
-        type=int,
-        default=None,
-        help="Maximum findings included in diff details.",
-    )
-    diff_parser.add_argument(
-        "--output",
-        help="Optional output file path. If omitted, print to stdout.",
-    )
-    diff_parser.add_argument(
-        "--fail-on-new-high",
-        type=int,
-        help="Return non-zero when new high/critical findings are greater than this threshold.",
-    )
-    diff_parser.add_argument(
-        "--clone-timeout",
-        type=float,
-        default=30.0,
-        help="Git clone timeout in seconds for GitHub URL scans (default: 30).",
-    )
-
-    ui_parser = subparsers.add_parser("ui", help="Run the local web UI.")
-    ui_parser.add_argument("--legacy", action="store_true", help="Use legacy Python web UI.")
-    ui_parser.add_argument("--host", default="127.0.0.1", help="Host to bind.")
-    ui_parser.add_argument("--port", type=int, default=8765, help="Port to bind.")
-    ui_parser.add_argument("--no-browser", action="store_true", help="Do not auto-open browser.")
-    ui_parser.add_argument(
-        "--clone-timeout",
-        type=float,
-        default=30.0,
-        help="Git clone timeout in seconds for GitHub URL scans (default: 30).",
-    )
-
     return parser
 
 

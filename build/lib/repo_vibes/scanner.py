@@ -25,13 +25,11 @@ def scan_project(
     *,
     top_largest_files: int = 5,
     config: RepoVibesConfig | None = None,
-    only_paths: set[str] | None = None,
 ) -> ScanReport:
     start = time.perf_counter()
     root = Path(project_path).resolve()
     root_display_path = _display_path(root)
     runtime_config = config if config is not None else default_repo_config()
-    normalized_only_paths = _normalize_only_paths(only_paths)
     active_extensions = runtime_config.effective_included_extensions
     gitignore_rules = _load_gitignore_rules(root, runtime_config)
     files: list[FileInfo] = []
@@ -75,8 +73,6 @@ def scan_project(
 
             relative_path = file_path.relative_to(root)
             relative_path_str = str(relative_path)
-            if normalized_only_paths and relative_path.as_posix() not in normalized_only_paths:
-                continue
             if not _should_include_path(relative_path, runtime_config, gitignore_rules):
                 continue
             depth = len(relative_path.parts) - 1
@@ -436,16 +432,3 @@ def _path_has_suspicious_name(relative_path: Path, keywords: set[str]) -> bool:
         if "positional argument" in message and "2 were given" in message:
             return path_has_suspicious_name(relative_path)
         raise
-
-
-def _normalize_only_paths(only_paths: set[str] | None) -> set[str]:
-    if not only_paths:
-        return set()
-    normalized: set[str] = set()
-    for raw in only_paths:
-        item = raw.replace("\\", "/").strip()
-        if item.startswith("./"):
-            item = item[2:]
-        if item:
-            normalized.add(item)
-    return normalized
