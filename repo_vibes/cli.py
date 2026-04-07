@@ -9,10 +9,11 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
-import tempfile
 import urllib.error
 import urllib.request
 from urllib.parse import urlparse
+import uuid
+import webbrowser
 
 from . import __version__
 from .config import RepoVibesConfig, load_repo_config
@@ -33,7 +34,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         ns = parser.parse_args(raw_args)
     except SystemExit as exc:
-        return int(exc.code)
+        return _normalize_system_exit_code(exc.code)
 
     if ns.command == "scan":
         return _run_scan_command(ns)
@@ -43,6 +44,19 @@ def main(argv: list[str] | None = None) -> int:
         return _run_ui_command(ns)
 
     parser.print_help()
+    return 1
+
+
+def _normalize_system_exit_code(code: object) -> int:
+    if code is None:
+        return 0
+    if isinstance(code, int):
+        return code
+    if isinstance(code, str):
+        try:
+            return int(code)
+        except ValueError:
+            return 1
     return 1
 
 
@@ -151,35 +165,36 @@ def _run_diff_command(ns: argparse.Namespace) -> int:
         print("Error: --fail-on-new-high must be >= 0.")
         return 1
 
-    baseline_snapshot = _load_baseline_snapshot(ns.baseline)
-
     with _prepare_scan_path(ns.path, clone_timeout=ns.clone_timeout) as project_path:
         if project_path is None:
             return 1
         try:
             config, _warnings = load_repo_config(project_path)
-            report = scan_project(
-                project_path,
-                top_largest_files=ns.top_files,
-                config=config,
-            )
-            scorecard = score_repo_vibes(
-                report,
-                line_thresholds=config.oversized_file_line_thresholds,
-            )
             max_findings = ns.max_findings
             if max_findings is None:
                 max_findings = config.max_findings_default
 
-            head_snapshot = snapshot_from_scorecard(
-                label="head",
-                report=report,
-                scorecard=scorecard,
-            )
-            changed_files = _changed_files_from_snapshots(
-                baseline_snapshot.get("scan_report", {}),
-                head_snapshot.get("scan_report", {}),
-            )
+            if ns.baseline:
+                baseline_snapshot = _load_baseline_snapshot(ns.baseline)
+                head_snapshot = _scan_snapshot(
+                    project_path=project_path,
+                    top_files=ns.top_files,
+                    config=config,
+                    label="head",
+                )
+                changed_files = _changed_files_from_snapshots(
+                    baseline_snapshot.get("scan_report", {}),
+                    head_snapshot.get("scan_report", {}),
+                )
+            else:
+                baseline_snapshot, head_snapshot, changed_files = _load_ref_snapshots(
+                    project_path=project_path,
+                    base_ref=ns.base,
+                    head_ref=ns.head,
+                    top_files=ns.top_files,
+                    config=config,
+                )
+
             payload = build_diff_payload(
                 base=baseline_snapshot,
                 head=head_snapshot,
@@ -216,24 +231,22 @@ def _run_diff_command(ns: argparse.Namespace) -> int:
 
 
 def _run_ui_command(ns: argparse.Namespace) -> int:
-    if ns.clone_timeout <= 0:
-        print("Error: --clone-timeout must be > 0.")
+    next_ui_dir = _locate_next_ui_dir()
+    if next_ui_dir is None:
+        print("Error: Next.js UI directory not found. Expected: ./ui with package.json")
         return 1
 
-    # Keep next-ui discovery hook available while defaulting to legacy server.
-    if not ns.legacy:
-        _ = _locate_next_ui_dir()
-
-    from . import web_ui
-
-    return int(
-        web_ui.run_ui_server(
+    try:
+        return _run_next_ui(
+            ui_dir=next_ui_dir,
             host=ns.host,
             port=ns.port,
             no_browser=ns.no_browser,
-            clone_timeout=ns.clone_timeout,
+            skip_install=ns.skip_install,
         )
-    )
+    except OSError as exc:
+        print(f"Error: failed to launch Next.js UI: {exc}")
+        return 1
 
 
 def _render_output(
@@ -326,6 +339,162 @@ def _call_formatter(
         raise
 
 
+def _scan_snapshot(
+    *,
+    project_path: Path,
+    top_files: int,
+    config: RepoVibesConfig,
+    label: str,
+) -> dict[str, object]:
+    report = scan_project(
+        project_path,
+        top_largest_files=top_files,
+        config=config,
+    )
+    scorecard = score_repo_vibes(
+        report,
+        line_thresholds=config.oversized_file_line_thresholds,
+    )
+    return snapshot_from_scorecard(
+        label=label,
+        report=report,
+        scorecard=scorecard,
+    )
+
+
+def _load_ref_snapshots(
+    *,
+    project_path: Path,
+    base_ref: str,
+    head_ref: str,
+    top_files: int,
+    config: RepoVibesConfig,
+) -> tuple[dict[str, object], dict[str, object], list[str]]:
+    _verify_git_ref_exists(project_path, base_ref)
+    _verify_git_ref_exists(project_path, head_ref)
+    changed_files = _list_changed_files_between_refs(
+        project_path=project_path,
+        base_ref=base_ref,
+        head_ref=head_ref,
+    )
+    changed_set = set(changed_files)
+    base_snapshot = _snapshot_from_ref_files(
+        project_path=project_path,
+        ref=base_ref,
+        changed_files=changed_set,
+        top_files=top_files,
+        config=config,
+        label=base_ref,
+    )
+    head_snapshot = _snapshot_from_ref_files(
+        project_path=project_path,
+        ref=head_ref,
+        changed_files=changed_set,
+        top_files=top_files,
+        config=config,
+        label=head_ref,
+    )
+    return base_snapshot, head_snapshot, changed_files
+
+
+def _verify_git_ref_exists(project_path: Path, ref: str) -> None:
+    result = subprocess.run(
+        ["git", "-C", str(project_path), "rev-parse", "--verify", "--quiet", f"{ref}^{{commit}}"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise ValueError(f"git ref does not exist or is not a commit: {ref}")
+
+
+def _list_changed_files_between_refs(
+    *,
+    project_path: Path,
+    base_ref: str,
+    head_ref: str,
+) -> list[str]:
+    result = subprocess.run(
+        [
+            "git",
+            "-C",
+            str(project_path),
+            "diff",
+            "--name-only",
+            "--diff-filter=ACMRD",
+            base_ref,
+            head_ref,
+        ],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        detail = result.stderr.strip() or result.stdout.strip() or "unknown git diff error"
+        raise ValueError(f"failed to compute git diff for refs `{base_ref}` -> `{head_ref}`: {detail}")
+    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
+
+
+def _snapshot_from_ref_files(
+    *,
+    project_path: Path,
+    ref: str,
+    changed_files: set[str],
+    top_files: int,
+    config: RepoVibesConfig,
+    label: str,
+) -> dict[str, object]:
+    workspace_temp = Path.cwd() / ".codevibes_tmp"
+    workspace_temp.mkdir(parents=True, exist_ok=True)
+    temp_dir = _create_workspace_temp_dir(
+        base_dir=workspace_temp,
+        prefix="codevibes-ref-",
+    )
+    try:
+        for raw_path in sorted(changed_files):
+            normalized = raw_path.replace("\\", "/")
+            rel_path = Path(normalized)
+            if rel_path.is_absolute() or any(part in {"", ".", ".."} for part in rel_path.parts):
+                raise ValueError(f"unexpected changed path from git diff: {raw_path}")
+            file_bytes = _load_file_from_ref(
+                project_path=project_path,
+                ref=ref,
+                relative_path=normalized,
+            )
+            if file_bytes is None:
+                continue
+            target_path = temp_dir / rel_path
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            target_path.write_bytes(file_bytes)
+
+        return _scan_snapshot(
+            project_path=temp_dir,
+            top_files=top_files,
+            config=config,
+            label=label,
+        )
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+def _load_file_from_ref(
+    *,
+    project_path: Path,
+    ref: str,
+    relative_path: str,
+) -> bytes | None:
+    result = subprocess.run(
+        ["git", "-C", str(project_path), "show", f"{ref}:{relative_path}"],
+        capture_output=True,
+    )
+    if result.returncode == 0:
+        return result.stdout
+
+    stderr_text = result.stderr.decode("utf-8", errors="replace").lower()
+    if "does not exist in" in stderr_text or "exists on disk, but not in" in stderr_text:
+        return None
+    detail = result.stderr.decode("utf-8", errors="replace").strip() or "unknown git show error"
+    raise ValueError(f"failed to load `{relative_path}` at ref `{ref}`: {detail}")
+
+
 def _load_baseline_snapshot(baseline_path: str) -> dict[str, object]:
     path = Path(baseline_path).expanduser()
     if not path.exists():
@@ -382,14 +551,78 @@ def _locate_next_ui_dir() -> Path | None:
     return candidate
 
 
+def _run_next_ui(
+    *,
+    ui_dir: Path,
+    host: str,
+    port: int,
+    no_browser: bool,
+    skip_install: bool,
+) -> int:
+    npm_bin = _resolve_npm_executable()
+    node_modules_dir = ui_dir / "node_modules"
+    if not node_modules_dir.exists():
+        if skip_install:
+            raise OSError("ui/node_modules is missing. Run `npm install` or remove `--skip-install`.")
+        print("ui/node_modules is missing; running `npm install`...")
+        install_result = subprocess.run([npm_bin, "install"], cwd=ui_dir)
+        if install_result.returncode != 0:
+            raise OSError(f"`npm install` failed with exit code {install_result.returncode}.")
+
+    url = f"http://{host}:{port}"
+    print(f"CodeVibes Next UI listening on {url}")
+    print("Press Ctrl+C to stop.")
+    if not no_browser:
+        webbrowser.open(url)
+
+    try:
+        return int(
+            subprocess.run(
+                [
+                    npm_bin,
+                    "run",
+                    "dev",
+                    "--",
+                    "--hostname",
+                    host,
+                    "--port",
+                    str(port),
+                ],
+                cwd=ui_dir,
+            ).returncode
+        )
+    except KeyboardInterrupt:
+        print("\nShutting down CodeVibes Next UI...")
+        return 0
+
+
+def _resolve_npm_executable() -> str:
+    candidates = ["npm.cmd", "npm"] if os.name == "nt" else ["npm"]
+    for candidate in candidates:
+        if shutil.which(candidate):
+            return candidate
+    raise OSError("npm is not installed or not available in PATH.")
+
+
+def _create_workspace_temp_dir(*, base_dir: Path, prefix: str) -> Path:
+    for _ in range(50):
+        candidate = base_dir / f"{prefix}{uuid.uuid4().hex}"
+        try:
+            candidate.mkdir(parents=True, exist_ok=False)
+            return candidate
+        except FileExistsError:
+            continue
+    raise OSError(f"failed to allocate temporary directory under {base_dir}")
+
+
 @contextmanager
 def _prepare_scan_path(raw_path: str, *, clone_timeout: float = 30.0):
     if _is_github_url(raw_path):
         workspace_temp = Path.cwd() / ".codevibes_tmp"
         workspace_temp.mkdir(parents=True, exist_ok=True)
-        temp_dir = tempfile.mkdtemp(prefix="codevibes-", dir=str(workspace_temp))
+        temp_dir = _create_workspace_temp_dir(base_dir=workspace_temp, prefix="codevibes-")
         try:
-            clone_path = Path(temp_dir) / "repo"
+            clone_path = temp_dir / "repo"
             env = os.environ.copy()
             env["GIT_TERMINAL_PROMPT"] = "0"
             try:
@@ -515,12 +748,24 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Git clone timeout in seconds for GitHub URL scans (default: 30).",
     )
 
-    diff_parser = subparsers.add_parser("diff", help="Compare current scan with a baseline JSON.")
+    diff_parser = subparsers.add_parser(
+        "diff",
+        help="Compare refs (`--base/--head`) or compare against a baseline JSON (`--baseline`).",
+    )
     diff_parser.add_argument("path", help="Local project path or GitHub URL to scan.")
     diff_parser.add_argument(
         "--baseline",
-        required=True,
         help="Path to baseline scan JSON generated by `scan --format json`.",
+    )
+    diff_parser.add_argument(
+        "--base",
+        default="main",
+        help="Base git ref when `--baseline` is not provided (default: main).",
+    )
+    diff_parser.add_argument(
+        "--head",
+        default="HEAD",
+        help="Head git ref when `--baseline` is not provided (default: HEAD).",
     )
     diff_parser.add_argument(
         "--format",
@@ -556,16 +801,14 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Git clone timeout in seconds for GitHub URL scans (default: 30).",
     )
 
-    ui_parser = subparsers.add_parser("ui", help="Run the local web UI.")
-    ui_parser.add_argument("--legacy", action="store_true", help="Use legacy Python web UI.")
+    ui_parser = subparsers.add_parser("ui", help="Run the local Next.js web UI.")
     ui_parser.add_argument("--host", default="127.0.0.1", help="Host to bind.")
     ui_parser.add_argument("--port", type=int, default=8765, help="Port to bind.")
     ui_parser.add_argument("--no-browser", action="store_true", help="Do not auto-open browser.")
     ui_parser.add_argument(
-        "--clone-timeout",
-        type=float,
-        default=30.0,
-        help="Git clone timeout in seconds for GitHub URL scans (default: 30).",
+        "--skip-install",
+        action="store_true",
+        help="Do not auto-run npm install when ui/node_modules is missing.",
     )
 
     return parser
